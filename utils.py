@@ -707,17 +707,22 @@ def check_collisions(trajectory: List[Tuple[int, int]],
         return False
     return True
 
-def draw_grid(draw_obj: ImageDraw, grid_map: Map, scale: Union[float, int]):
+def draw_grid(draw_obj: ImageDraw, grid_map: Map, map_mask:Map, scale: Union[float, int]):
     """
     Draws static obstacles using draw_obj.
     """
     height, width = grid_map.get_size()
     for i in range(height):
         for j in range(width):
-            if not grid_map.traversable(i, j):
-                draw_obj.rectangle(
-                    (j * scale, i * scale, (j + 1) * scale - 1, \
-                        (i + 1) * scale - 1), fill=(70, 80, 80), width=0.0)
+            # if grid_map.is_undefined_obstacle(i, j) and grid_map.traversable(i, j):
+            #   draw_obj.rectangle((j * scale, i * scale, (j + 1) * scale - 1, \
+            #                     (i + 1) * scale - 1), fill=(234, 237, 237), outline ="red", width=1)
+            if not map_mask.traversable(i, j):
+                outline_width = int(map_mask.is_undefined_obstacle(i, j))
+                color = (234, 237, 237) if grid_map.traversable(i, j) else (70, 80, 80)
+                draw_obj.rectangle((j * scale, i * scale, (j + 1) * scale - 1, \
+                                (i + 1) * scale - 1), fill=color,
+                                  outline ="red", width=outline_width)
 
 
 def draw_start_goal(draw_obj: ImageDraw,
@@ -883,6 +888,7 @@ def shortest_first(
         key=lambda i: heuristic_func(*markers[i])
     )
 def draw(grid_map: Map,
+         map_mask: Map,
          starts: Optional[List[Tuple[int, int]]] = None,
          goals: Optional[List[Tuple[int, int]]] = None,
          paths: Optional[List[List[Tuple[int, int]]]] =  None,
@@ -918,7 +924,7 @@ def draw(grid_map: Map,
 
             im = Image.new('RGB', (w_im, h_im), color = (234, 237, 237))
             draw = ImageDraw.Draw(im)
-            draw_grid(draw, grid_map, scale)
+            draw_grid(draw, grid_map,map_mask, scale)
 
             if starts is not None and goals is not None:
                 for a_id in range(len(starts)):
