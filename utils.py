@@ -358,7 +358,7 @@ class CATable:
         return check_vertex and check_edge
 
 
-    def last_visited(self, i: int, j: int) -> int | float:
+    def last_visited(self, i: int, j: int) -> int:
         """
         Returns value t when the cell (i, j) was last time occupied.
         If the cell was not occupied, then the value -1 should be returned.
@@ -718,7 +718,7 @@ def draw_grid(draw_obj: ImageDraw, grid_map: Map, map_mask:Map, scale: Union[flo
             #   draw_obj.rectangle((j * scale, i * scale, (j + 1) * scale - 1, \
             #                     (i + 1) * scale - 1), fill=(234, 237, 237), outline ="red", width=1)
             if not map_mask.traversable(i, j):
-                outline_width = int(map_mask.is_undefined_obstacle(i, j))
+                outline_width = int(map_mask.traversable(i, j) == 2)
                 color = (234, 237, 237) if grid_map.traversable(i, j) else (70, 80, 80)
                 draw_obj.rectangle((j * scale, i * scale, (j + 1) * scale - 1, \
                                 (i + 1) * scale - 1), fill=color,
